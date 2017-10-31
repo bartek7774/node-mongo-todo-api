@@ -19,7 +19,14 @@ app.post('/todos',(req,res)=>{
     res.send(doc);
   },(e)=>{
     let {errors:{text:{message:name}}}=e;
-    // console.log(name);
+    res.status(400).send(e);
+  });
+});
+
+app.get('/todos',(req,res)=>{
+  Todo.find().then((docs)=>{
+    res.send({docs});
+  }).catch((e)=>{
     res.status(400).send(e);
   });
 });
