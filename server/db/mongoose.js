@@ -1,8 +1,8 @@
-let mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://localhost:27017/TodoApp', {
   useMongoClient: true
 });
 
-mongoose.exports={mongoose};
+module.exports={mongoose};
