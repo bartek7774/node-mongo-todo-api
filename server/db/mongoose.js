@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
 
-mongoose.connect(encodeURI('mongodb://bartex:Yeti777%@ds245715.mlab.com:45715/todo_app'), {
+mongoose.connect(process.env.MONGO_URL?encodeURI(process.env.MONGO_URL):'mongodb://localhost:27017/TodoApp', {
   useMongoClient: true
 })
 .then(function (db) {
