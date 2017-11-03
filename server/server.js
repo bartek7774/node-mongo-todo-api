@@ -1,3 +1,5 @@
+require('./config/config');
+
 const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -8,7 +10,7 @@ const { User } = require('./models/user');
 const { Todo } = require('./models/todo');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 app.use(bodyParser.json());
 
@@ -70,10 +72,10 @@ app.patch('/todos/:id', (req, res) => {
     body.completedAt = null;
   }
 
-  Todo.findByIdAndUpdate(id,{$set:body},{new:true}).then((todo)=>{
-    if(!todo) return res.status(404).send();
-    res.send({todo});
-  }).catch((e)=>res.status(404).send());
+  Todo.findByIdAndUpdate(id, { $set: body }, { new: true }).then((todo) => {
+    if (!todo) return res.status(404).send();
+    res.send({ todo });
+  }).catch((e) => res.status(404).send());
 
 });
 
