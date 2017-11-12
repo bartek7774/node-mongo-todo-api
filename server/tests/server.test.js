@@ -187,7 +187,7 @@ describe('GET /users/me', () => {
 
 describe('POST /user', () => {
   it('should create user', (done) => {
-    let user={ email: 'new@gmail.com', password: 'abc123' };
+    let user = { email: 'new@gmail.com', password: 'abc123' };
     request(app)
       .post('/users')
       .send(user)
@@ -197,41 +197,87 @@ describe('POST /user', () => {
         expect(res.body.email).to.equal(user.email);
         expect(res.body._id).to.exist;
       })
-      .end((err)=>{
-        if(err){
+      .end((err) => {
+        if (err) {
           return done(err);
         }
-        User.findOne({email:user.email})
-          .then((doc)=>{
+        User.findOne({ email: user.email })
+          .then((doc) => {
             expect(doc.email).to.equal(user.email);
             expect(doc.password).to.not.equal(user.password);
             expect(doc.tokens[0].token).to.exist;
             done();
           })
-          .catch((err)=>{
+          .catch((err) => {
             return done(err);
           });
       });
   });
-  it('sohould return validation errors if request invalid',(done)=>{
-    let user={ email: 'userThreeail.com', password: 'abc12' };
+  it('sohould return validation errors if request invalid', (done) => {
+    let user = { email: 'userThreeail.com', password: 'abc12' };
     request(app)
       .post('/users')
       .send({
-        email:'email.com',
-        password:'123'
+        email: 'email.com',
+        password: '123'
       })
       .expect(400)
       .end(done);
   });
-  it('should not create user if email is use',(done)=>{
+  it('should not create user if email is use', (done) => {
     request(app)
       .post('/users')
       .send({
         email: users[0].email,
-        password:'abc123'
+        password: 'abc123'
       })
       .expect(400)
       .end(done);
+  });
+});
+
+describe('POST /users/login', () => {
+  it('should login user and return user auth token', (done) => {
+    request(app)
+      .post('/users/login')
+      .send({
+        email: users[1].email,
+        password: users[1].password
+      })
+      .expect(200)
+      .expect((res) => {
+        expect(res.headers['x-auth']).to.exist;
+        expect(res.body.email).to.equal(users[1].email);
+      })
+      .end((err, res) => {
+        if (err) return done(err);
+        User.findById(users[1]._id).then((doc) => {
+          expect(doc.tokens[0]).to.include({
+            access: 'auth',
+            token: res.headers['x-auth']
+          });
+          done();
+        }).catch((e) => done(e));
+      });
+  });
+
+  it('should reject invalid password', (done) => {
+    request(app)
+      .post('/users/login')
+      .send({
+        email: users[1].email,
+        password: 'abc127'
+      })
+      .expect(404)
+      .expect((res) => {
+        expect(res.headers['x-auth']).to.not.exist;
+      })
+      .end((err, res) => {
+        if (err) return done(err);
+        User.findById(users[1]._id).then((doc) => {
+          expect(doc.tokens).to.have.lengthOf(0);
+          done();
+        }).catch((e) => done(e));
+      });
   });
 });
