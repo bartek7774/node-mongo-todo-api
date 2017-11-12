@@ -45,7 +45,7 @@ UserSchema.methods.toJSON = function () {
 };
 
 UserSchema.statics.findByToken = function (token) {
-  let user = this;
+  let UserModel = this;
   let decoded;
 
   try {
@@ -53,7 +53,7 @@ UserSchema.statics.findByToken = function (token) {
   } catch (e) {
     return Promise.reject();
   }
-  return User.findOne({
+  return UserModel.findOne({
     '_id': decoded._id,
     'tokens.token': token,
     'tokens.access': 'auth'
