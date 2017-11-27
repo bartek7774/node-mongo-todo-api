@@ -2,11 +2,21 @@ const {SHA256}=require('crypto-js');
 const jwt=require('jsonwebtoken');
 const bcrypt=require('bcryptjs');
 
+let data={
+  _id:3,
+  email:'bgajdkos@gmail.com'
+};
+
+let sec=jwt.sign(data,'secret').toString();
+
+console.log('sec ',jwt.verify(sec,'secret'));
+
 let password='abc123';
 bcrypt.genSalt(10,(err,salt)=>{
   // bcrypt.hash(password,salt,(err,hash)=>{
   //   console.log(hash);
   // });
+
   bcrypt.hash(password,salt).then((hash)=>{
     console.log(hash);
   });
